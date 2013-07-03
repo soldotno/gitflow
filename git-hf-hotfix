@@ -296,7 +296,7 @@ cmd_finish() {
 	echo "b is $BRANCH and AUTOVERSION is $AUTOVERSION"
 	#rename branch
 	git branch -m $BRANCH $AUTOVERSION
-	BRANCH=AUTOVERSION
+	BRANCH=$AUTOVERSION
 	
 
 
