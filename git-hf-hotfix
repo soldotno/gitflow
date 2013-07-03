@@ -269,6 +269,8 @@ cmd_finish() {
 		FLAGS_sign=$FLAGS_TRUE
 	fi
 
+	echo "b is $BRANCH"
+
 	# sanity checks
 	require_branch "$BRANCH"
 	require_clean_working_tree
@@ -290,9 +292,6 @@ cmd_finish() {
 
 	#rename branch
 	git branch -m $BRANCH tag_1.2.3.4.5
-
-	die "Branch done"
-	
 
 	# try to merge into master
 	# in case a previous attempt to finish this release branch has failed,
