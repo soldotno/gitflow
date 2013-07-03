@@ -291,11 +291,13 @@ cmd_finish() {
 	fi
 
 	#GETVERSION
-	AUTOVERSION=$PREFIX"tag_1.3.3.4.1"
+	VERSION="tag_1.3.3.4.1"
+	AUTOVERSION=$PREFIX$VERSION
 	echo "b is $BRANCH and AUTOVERSION is $AUTOVERSION"
 	#rename branch
 	git branch -m $BRANCH $AUTOVERSION
-
+	BRANCH=AUTOVERSION
+	
 
 
 	# try to merge into master
