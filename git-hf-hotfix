@@ -290,8 +290,12 @@ cmd_finish() {
 		require_branches_equal "$DEVELOP_BRANCH" "$ORIGIN/$DEVELOP_BRANCH"
 	fi
 
+	#GETVERSION
+	AUTOVERSION=$PREFIX"tag_1.2.3.4.5"
+
+	die "$AUTOVERSION"
 	#rename branch
-	git branch -m $BRANCH tag_1.2.3.4.5
+	git branch -m $BRANCH $AUTOVERSION
 
 	# try to merge into master
 	# in case a previous attempt to finish this release branch has failed,
