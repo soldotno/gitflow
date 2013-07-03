@@ -292,8 +292,6 @@ cmd_finish() {
 
 	#GETVERSION
 	AUTOVERSION=$PREFIX"tag_1.2.3.4.5"
-
-	die "$AUTOVERSION"
 	#rename branch
 	git branch -m $BRANCH $AUTOVERSION
 
