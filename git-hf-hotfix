@@ -296,7 +296,7 @@ cmd_finish() {
 	#rename branch
 	git branch -m $BRANCH $AUTOVERSION
 
-	die "done rename"
+
 
 	# try to merge into master
 	# in case a previous attempt to finish this release branch has failed,
