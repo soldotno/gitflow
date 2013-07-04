@@ -185,7 +185,8 @@ update_version_no() {
 	fi
 	#bumping the hotfix
 	VERSION=`echo $LATESTVERSION | awk -F. '/[0-9]+\./{$2+=1;OFS="/";print}'`
-	echo $VERSION
+	#now, set and ensure that it worked
+	set_version_no_sol
 }
 
 get_version_no_sol() {
@@ -310,16 +311,9 @@ cmd_finish() {
 	if has "$ORIGIN/$DEVELOP_BRANCH" $(git_remote_branches); then
 		require_branches_equal "$DEVELOP_BRANCH" "$ORIGIN/$DEVELOP_BRANCH"
 	fi
-
-	#GETVERSION
-	#VERSION="tag_1.3.3.4.3"
-	#AUTOVERSION=$PREFIX$VERSION
-	#echo "b is $BRANCH and AUTOVERSION is $AUTOVERSION"
-	#rename branch
-	#git branch -m $BRANCH $AUTOVERSION
-	#BRANCH=$AUTOVERSION
+	
+	#try to bump version number
 	update_version_no
-
 
 	# try to merge into master
 	# in case a previous attempt to finish this release branch has failed,
