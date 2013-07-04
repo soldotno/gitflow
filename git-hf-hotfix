@@ -168,15 +168,6 @@ create_temp_version_no() {
 	fi
 }
 
-create_temp_version_no() {
-	if [ "$VERSION" == "" ]; then
-	   VERSION=`date +%s | sha256sum | base64 | head -c 6 ; echo`
-	   #also update branch
-	   BRANCH=$PREFIX$VERSION
-           echo "creating version arg: $VERSION"
-	fi
-}
-
 update_version_no() {
 	#get current version		   
 	get_version_no_sol
