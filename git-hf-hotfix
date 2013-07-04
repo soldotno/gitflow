@@ -168,20 +168,6 @@ create_temp_version_no() {
 	fi
 }
 
-get_version_no() {
-	if [ "$VERSION" == "" ]; then
-	   local hotfix_branches=$(echo "$(git_local_branches)" | grep "^$PREFIX")
-	   local first_branch=$(echo ${hotfix_branches} | head -n1)
-	   first_branch=${first_branch#$PREFIX}
-	   if [ "$first_branch" == "" ]; then
-	      die "There is no existing hotfix branch. Nothing to finish. "
-	   fi
-	   VERSION=$first_branch
-	   #also update branch
-	   BRANCH=$PREFIX$VERSION
-	fi
-}
-
 create_temp_version_no() {
 	if [ "$VERSION" == "" ]; then
 	   VERSION=`date +%s | sha256sum | base64 | head -c 6 ; echo`
@@ -191,20 +177,30 @@ create_temp_version_no() {
 	fi
 }
 
-get_version_no() {
-	if [ "$VERSION" == "" ]; then
-	   local hotfix_branches=$(echo "$(git_local_branches)" | grep "^$PREFIX")
-	   local first_branch=$(echo ${hotfix_branches} | head -n1)
-	   first_branch=${first_branch#$PREFIX}
-	   if [ "$first_branch" == "" ]; then
-	      die "There is no existing hotfix branch. Nothing to finish."
-	   fi
-	   die "There is an existing hotfix branch ($first_branch). Finish that one first. $hotfix_branches"
-	   VERSION=`date +%s | sha256sum | base64 | head -c 6 ; echo`
-	   #also update branch
-	   BRANCH=$PREFIX$VERSION
-           echo "creating version arg: $VERSION"
+update_version_no() {
+	#get current version		   
+	get_version_no_sol
+	if [ "$LATESTVERSION" == "" ]; then
+	   die "fatal: cannot find latest version number"
 	fi
+	#bumping the hotfix
+	VERSION=`echo $LATESTVERSION | awk -F. '/[0-9]+\./{$2+=1;OFS="/";print}'`
+	echo $VERSION
+}
+
+get_version_no_sol() {
+	LATESTVERSION=`cat /storage/www/prod/solpres/version_latest.txt`
+
+}
+
+set_version_no_sol() {
+	echo $VERSION > /storage/www/prod/solpres/version_latest.txt
+	#ensure that it happend
+	get_version_no_sol
+	if [ "$VERSION" != "$LATESTVERSION" ]; then
+	   die "Could not ensure version numbering."
+	fi
+
 }
 
 require_base_is_on_master() {
@@ -314,13 +310,13 @@ cmd_finish() {
 	fi
 
 	#GETVERSION
-	VERSION="tag_1.3.3.4.3"
+	#VERSION="tag_1.3.3.4.3"
 	#AUTOVERSION=$PREFIX$VERSION
 	#echo "b is $BRANCH and AUTOVERSION is $AUTOVERSION"
 	#rename branch
 	#git branch -m $BRANCH $AUTOVERSION
 	#BRANCH=$AUTOVERSION
-	
+	update_version_no
 
 
 	# try to merge into master
