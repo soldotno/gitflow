@@ -163,6 +163,7 @@ get_version_no_sol() {
 }
 
 set_version_no_sol() {
+	#TODO...we need to alter last number to 0...
         VERSION=`echo $LATESTVERSION | awk -F. '/[0-9]+\./{$2+=1;OFS=".";print}'`
 	#now, set and ensure that it worked
 	echo $VERSION > /storage/www/prod/solpres/version_latest.txt
