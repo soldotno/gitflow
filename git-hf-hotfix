@@ -155,9 +155,30 @@ parse_remote_name() {
 
 require_version_arg() {
 	if [ "$VERSION" == "" ]; then
-		warn "Missing argument <version>"
-		usage
-		exit 1
+	     #create random name
+	     create_temp_version_no
+	fi
+}
+create_temp_version_no() {
+	if [ "$VERSION" == "" ]; then
+	   VERSION=`date +%s | sha256sum | base64 | head -c 6 ; echo`
+	   #also update branch
+	   BRANCH=$PREFIX$VERSION
+           echo "creating version arg: $VERSION"
+	fi
+}
+
+get_version_no() {
+	if [ "$VERSION" == "" ]; then
+	   local hotfix_branches=$(echo "$(git_local_branches)" | grep "^$PREFIX")
+	   local first_branch=$(echo ${hotfix_branches} | head -n1)
+	   first_branch=${first_branch#$PREFIX}
+	   if [ "$first_branch" == "" ]; then
+	      die "There is no existing hotfix branch. Nothing to finish. "
+	   fi
+	   VERSION=$first_branch
+	   #also update branch
+	   BRANCH=$PREFIX$VERSION
 	fi
 }
 
@@ -218,8 +239,7 @@ cmd_start() {
 	DEFINE_boolean fetch true "fetch from $ORIGIN before creating the new branch" F
 	parse_args "$@"
 	BASE=${2:-$MASTER_BRANCH}
-	#created later on
-	create_temp_version_no
+	require_version_arg
 
 	# sanity checks
 	require_clean_working_tree
@@ -266,9 +286,7 @@ cmd_finish() {
 	DEFINE_boolean notag false "don't tag this release" n
 	DEFINE_boolean nobackmerge false "don't back-merge $MASTER_BRANCH to be a parent of $DEVELOP_BRANCH (using tag if applicable)" b	parse_args "$@"
 	parse_args "$@"
-	#require_version_arg
-	get_version_no
-	require_no_existing_hotfix_branches
+	name_or_current
 
 	# handle flags that imply other flags
 	if [ "$FLAGS_signingkey" != "" ]; then
@@ -293,6 +311,16 @@ cmd_finish() {
 	if has "$ORIGIN/$DEVELOP_BRANCH" $(git_remote_branches); then
 		require_branches_equal "$DEVELOP_BRANCH" "$ORIGIN/$DEVELOP_BRANCH"
 	fi
+
+	#GETVERSION
+	VERSION="tag_1.3.3.4.2"
+	#AUTOVERSION=$PREFIX$VERSION
+	#echo "b is $BRANCH and AUTOVERSION is $AUTOVERSION"
+	#rename branch
+	#git branch -m $BRANCH $AUTOVERSION
+	#BRANCH=$AUTOVERSION
+	
+
 
 	# try to merge into master
 	# in case a previous attempt to finish this release branch has failed,
