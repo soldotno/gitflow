@@ -184,8 +184,6 @@ update_version_no() {
 	   die "fatal: cannot find latest version number"
 	fi
 	#bumping the hotfix
-	VERSION=`echo $LATESTVERSION | awk -F. '/[0-9]+\./{$2+=1;OFS="/";print}'`
-	#now, set and ensure that it worked
 	set_version_no_sol
 }
 
@@ -195,13 +193,14 @@ get_version_no_sol() {
 }
 
 set_version_no_sol() {
+        VERSION=`echo $LATESTVERSION | awk -F. '/[0-9]+\./{$2+=1;OFS=".";print}'`
+	#now, set and ensure that it worked
 	echo $VERSION > /storage/www/prod/solpres/version_latest.txt
 	#ensure that it happend
 	get_version_no_sol
 	if [ "$VERSION" != "$LATESTVERSION" ]; then
 	   die "Could not ensure version numbering."
 	fi
-
 }
 
 require_base_is_on_master() {
