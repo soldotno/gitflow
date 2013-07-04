@@ -169,7 +169,7 @@ create_temp_version_no() {
 }
 
 update_version_no() {
-	#get current version		   
+	#get current version number
 	get_version_no_sol
 	if [ "$LATESTVERSION" == "" ]; then
 	   die "fatal: cannot find latest version number"
