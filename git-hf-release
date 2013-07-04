@@ -235,6 +235,8 @@ cmd_start() {
 	echo "- When done, run:"
 	echo
 	echo "     git hf release finish '$VERSION'"
+	echo " 	   OR just"
+	echo "	   git hf release finish"
 	echo
 }
 
