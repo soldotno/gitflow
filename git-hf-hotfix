@@ -269,6 +269,8 @@ cmd_start() {
 	echo "- When done, run:"
 	echo
 	echo "     git hf hotfix finish '$VERSION'"
+	echo "	   OR just simply"
+	echo "	   git hf hotfix finish"
 	echo
 }
 
