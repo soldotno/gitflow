@@ -133,9 +133,43 @@ parse_args() {
 
 require_version_arg() {
 	if [ "$VERSION" = "" ]; then
-		warn "Missing argument <version>"
-		usage
-		exit 1
+	   #create temporary version number as we auto-update version number later on.
+           create_temp_version_no
+	fi
+}
+
+create_temp_version_no() {
+	if [ "$VERSION" == "" ]; then
+	   VERSION=`date +%s | sha256sum | base64 | head -c 6 ; echo`
+	   #also update branch
+	   BRANCH=$PREFIX$VERSION
+           echo "creating version arg: $VERSION"
+	fi
+}
+
+update_version_no() {
+	#get current version number
+	get_version_no_sol
+	if [ "$LATESTVERSION" == "" ]; then
+	   die "fatal: cannot find latest version number"
+	fi
+	#bumping the hotfix
+	set_version_no_sol
+}
+
+get_version_no_sol() {
+	LATESTVERSION=`cat /storage/www/prod/solpres/version_latest.txt`
+
+}
+
+set_version_no_sol() {
+        VERSION=`echo $LATESTVERSION | awk -F. '/[0-9]+\./{$NF+=1;OFS=".";print}'`
+	#now, set and ensure that it worked
+	echo $VERSION > /storage/www/prod/solpres/version_latest.txt
+	#ensure that it happend
+	get_version_no_sol
+	if [ "$VERSION" != "$LATESTVERSION" ]; then
+	   die "Could not ensure version numbering."
 	fi
 }
 
@@ -213,7 +247,9 @@ cmd_finish() {
 	DEFINE_boolean nobackmerge false "don't back-merge $MASTER_BRANCH to be a parent of $DEVELOP_BRANCH (using tag if applicable)" b
 
 	parse_args "$@"
-	require_version_arg
+	#require_version_arg
+	#keep current name if we are in correct place
+	name_or_current
 
 	# handle flags that imply other flags
 	if [ "$FLAGS_signingkey" != "" ]; then
@@ -246,6 +282,9 @@ cmd_finish() {
 	if has "$ORIGIN/$DEVELOP_BRANCH" $(git_remote_branches); then
 		require_branches_equal "$DEVELOP_BRANCH" "$ORIGIN/$DEVELOP_BRANCH"
 	fi
+
+	#try to bump version number
+	update_version_no
 
 	# try to merge into master
 	# in case a previous attempt to finish this release branch has failed,
