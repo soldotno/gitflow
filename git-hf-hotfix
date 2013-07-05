@@ -74,7 +74,8 @@ cmd_list() {
                 warn "You can start a new hotfix branch:"
                 warn ""
                 warn "    git hf hotfix start <version> [<base>]"
-                warn ""
+                warn "	  OR simply"
+		warn "	  git hf hotfix start"
 		exit 0
 	fi
 	current_branch=$(git branch --no-color | grep '^\* ' | grep -v 'no branch' | sed 's/^* //g')
