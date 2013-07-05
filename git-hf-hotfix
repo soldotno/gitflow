@@ -123,6 +123,7 @@ cmd_list() {
 }
 
 cmd_help() {
+	#need a change
 	usage
 	exit 0
 }
