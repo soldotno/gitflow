@@ -158,7 +158,8 @@ update_version_no() {
 }
 
 get_version_no_sol() {
-	LATESTVERSION=`cat /storage/www/prod/solpres/version_latest.txt`
+	REPONAME=`git remote show origin -n|grep "Fetch URL:"|grep -oE "\\/(.*?)(?git)"|tr -d "/"|tr "." "\n"| head -n 1`
+	LATESTVERSION=`cat /storage/www/prod/$REPONAME/version_latest.txt`
 
 }
 
@@ -167,7 +168,8 @@ set_version_no_sol() {
 	#update last num to 0
 	VERSION=`echo $VERSION | awk -F. '/[0-9]+\./{$NF=0;OFS=".";print}'`
 	#now, set and ensure that it worked
-	echo $VERSION > /storage/www/prod/solpres/version_latest.txt
+	REPONAME=`git remote show origin -n|grep "Fetch URL:"|grep -oE "\\/(.*?)(?git)"|tr -d "/"|tr "." "\n"| head -n 1`
+	echo $VERSION > /storage/www/prod/$REPONAME/version_latest.txt
 	#ensure that it happend
 	get_version_no_sol
 	if [ "$VERSION" != "$LATESTVERSION" ]; then
